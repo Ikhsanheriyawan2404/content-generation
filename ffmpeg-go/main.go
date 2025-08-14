@@ -98,59 +98,86 @@ func createVideoFromAudioAndImages(audioPath string, imagePaths []string, output
 
 	// Calculate duration per image
 	durationPerImage := audioDuration / float64(len(imagePaths))
+	framesPerImage := int(durationPerImage * 30) // 30 fps
 
-	// Create a temporary text file for FFmpeg concat demuxer
-	concatFile := "/tmp/concat_list.txt"
-	file, err := os.Create(concatFile)
+	// Create individual video segments for each image with zoom effect
+	var videoSegments []string
+	
+	for i, imagePath := range imagePaths {
+		segmentPath := fmt.Sprintf("/tmp/segment_%d.mp4", i)
+		videoSegments = append(videoSegments, segmentPath)
+		
+		// Create zoom effect for each image individually
+		zoomCmd := exec.Command("ffmpeg",
+			"-loop", "1",
+			"-i", imagePath,
+			"-t", fmt.Sprintf("%.2f", durationPerImage),
+			"-vf", fmt.Sprintf(
+				"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"+
+				"zoompan=z='min(1+0.002*on,1.3)':d=%d:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps=30",
+				framesPerImage,
+			),
+			"-c:v", "libx264",
+			"-pix_fmt", "yuv420p",
+			"-preset", "medium",
+			"-crf", "23",
+			"-y",
+			segmentPath,
+		)
+		
+		if err := zoomCmd.Run(); err != nil {
+			// Clean up created segments
+			for _, segment := range videoSegments {
+				os.Remove(segment)
+			}
+			return fmt.Errorf("error creating video segment %d: %v", i, err)
+		}
+	}
+	
+	// Create concat file for video segments
+	videoConcatFile := "/tmp/video_concat.txt"
+	file, err := os.Create(videoConcatFile)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
-	defer os.Remove(concatFile)
-
-	// Write image paths with calculated duration to concat file
-	for _, imagePath := range imagePaths {
-		_, err := file.WriteString(fmt.Sprintf("file '%s'\n", imagePath))
-		if err != nil {
-			return err
-		}
-		_, err = file.WriteString(fmt.Sprintf("duration %.2f\n", durationPerImage))
+	defer os.Remove(videoConcatFile)
+	
+	// Write video segment paths to concat file
+	for _, segment := range videoSegments {
+		_, err := file.WriteString(fmt.Sprintf("file '%s'\n", segment))
 		if err != nil {
 			return err
 		}
 	}
-
-	// Add the last image again for proper ending
-	_, err = file.WriteString(fmt.Sprintf("file '%s'\n", imagePaths[len(imagePaths)-1]))
-	if err != nil {
-		return err
-	}
-
-	// FFmpeg command with smooth zoom effect for 9:16 aspect ratio
-	cmd := exec.Command("ffmpeg",
+	
+	// Combine all video segments and add audio
+	finalCmd := exec.Command("ffmpeg",
 		"-f", "concat",
 		"-safe", "0",
-		"-i", concatFile,
+		"-i", videoConcatFile,
 		"-i", audioPath,
-		"-filter_complex",
-		fmt.Sprintf("[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,zoompan=z='min(1.0+on*0.0008,1.15)':d=%d:x=iw/2-(iw/zoom/2):y=ih/2-(ih/zoom/2):s=1080x1920:fps=30[outv]", int(durationPerImage*30)),
-		"-map", "[outv]",
-		"-map", "1:a",
-		"-c:v", "libx264",
+		"-c:v", "copy", // Copy video (already encoded)
 		"-c:a", "aac",
 		"-shortest",
-		"-pix_fmt", "yuv420p",
-		"-preset", "medium",
-		"-crf", "23",
+		"-movflags", "+faststart",
 		"-y",
 		outputPath,
 	)
-
-	output, err := cmd.CombinedOutput()
+	
+	output, err := finalCmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("ffmpeg error: %v, output: %s", err, string(output))
+		// Clean up
+		for _, segment := range videoSegments {
+			os.Remove(segment)
+		}
+		return fmt.Errorf("ffmpeg final merge error: %v, output: %s", err, string(output))
 	}
-
+	
+	// Clean up temporary files
+	for _, segment := range videoSegments {
+		os.Remove(segment)
+	}
 	return nil
 }
 
