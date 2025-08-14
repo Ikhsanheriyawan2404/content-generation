@@ -1,0 +1,28 @@
+{
+  "name": "audio-tts-dan-image-generation",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^1.13.0",
+    "@prisma/client": "^6.13.0",
+    "@types/express": "^5.0.3",
+    "common-tags": "^1.8.2",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mime": "^4.0.7",
+    "minio": "^8.0.5",
+    "prisma": "^6.13.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/common-tags": "^1.8.4",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.2.1",
+    "tsx": "^4.16.2",
+    "typescript": "^5.9.2"
+  }
+}

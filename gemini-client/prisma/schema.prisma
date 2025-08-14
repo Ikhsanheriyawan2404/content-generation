@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id              Int       @id @default(autoincrement())
+  name            String    @unique @db.VarChar(255)
+  description     String?
+  targetAudience  String?   @db.VarChar(255) @map("target_audience")
+  contentGoal     String?   @db.VarChar(255) @map("content_goal")
+  exampleUseCase  String?   @db.VarChar(255) @map("example_use_case")
+  lastPickedAt    DateTime? @map("last_picked_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  contents        Content[]
+
+  @@map("categories")
+}
+
+model Content {
+  id         Int       @id @default(autoincrement())
+  categoryId Int       @map("category_id")
+  title      String    @db.VarChar(255)
+  caption    String?   @db.VarChar(255)
+  scriptText String?   @db.Text @map("script_text")
+  status     ContentStatus @default(pending)
+  metadata   Json?     @map("metadata")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  category   Category  @relation(fields: [categoryId], references: [id])
+  mediaFiles MediaFile[]
+
+  @@map("contents")
+}
+
+model MediaFile {
+  id          Int       @id @default(autoincrement())
+  contentId   Int       @map("content_id")
+  fileType    MediaFileType @map("file_type")
+  fileName    String    @db.VarChar(255) @map("file_name")
+  fileUrl     String    @db.Text @map("file_url")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relasi
+  content Content @relation(fields: [contentId], references: [id])
+
+  @@map("media_files")
+}
+
+enum ContentStatus {
+  pending
+  done
+}
+
+enum MediaFileType {
+  image
+  audio
+  video
+  other
+}
