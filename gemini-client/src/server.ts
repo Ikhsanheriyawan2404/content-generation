@@ -10,7 +10,7 @@ import { generateAudio, generateContentScript, generateImage } from './services/
 const prisma = new PrismaClient();
 const app = express();
 import * as dotenv from 'dotenv';
-import { saveContent } from './services/content';
+import { getContentById, saveContent } from './services/content';
 import { getMediaByContent, getMediaById, insertMediaFile } from './services/media';
 dotenv.config();
 
@@ -89,8 +89,10 @@ app.post('/generate/audio', async (req, res) => {
 
     const bucketName = 'media'; // Ganti dengan nama bucket yang diinginkan
     await ensureBucketExists(bucketName);
+    const content = await getContentById(contentId);
+    const scriptText = content?.scriptText || text
 
-    const audioResult = await generateAudio(text);
+    const audioResult = await generateAudio(scriptText);
     
     if (!audioResult) {
       return res.status(500).json({ message: 'Failed to generate audio.' });

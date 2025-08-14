@@ -21,3 +21,16 @@ export async function saveContent(content: any, categoryId: number) {
     throw new Error('Failed to get content.');
   }
 }
+
+export async function getContentById(id: number) {
+  try {
+    return await prisma.content.findUnique({
+      where: {
+        id: id,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching content by ID:', error);
+    throw new Error('Failed to get content by ID.');
+  }
+}
