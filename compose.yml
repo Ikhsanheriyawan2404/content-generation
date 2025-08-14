@@ -3,8 +3,6 @@ services:
   video-api:
     build: ./ffmpeg-go
     container_name: video-api
-    ports:
-      - "${APP_PORT}:${APP_PORT}"
     environment:
       - PORT=${APP_PORT}
       - MINIO_URL=${MINIO_URL}
@@ -25,8 +23,6 @@ services:
   node-api:
     build: ./gemini-client
     container_name: node-api
-    ports:
-      - "3001:${APP_PORT}"
     environment:
       - PORT=${APP_PORT}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
@@ -62,8 +58,6 @@ services:
   n8n:
     image: docker.n8n.io/n8nio/n8n
     container_name: n8n
-    ports:
-      - "5678:5678"
     volumes:
       - n8n_data:/home/node/.n8n
     restart: unless-stopped
