@@ -21,6 +21,7 @@ model Category {
   contentGoal     String?   @db.VarChar(255) @map("content_goal")
   exampleUseCase  String?   @db.VarChar(255) @map("example_use_case")
   lastPickedAt    DateTime? @map("last_picked_at")
+  disabledAt      DateTime? @map("disabled_at") // NULL = aktif, ada nilai = nonaktif
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 

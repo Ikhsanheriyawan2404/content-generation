@@ -9,6 +9,7 @@ export async function getNextCategoryRoundRobin() {
   try {
     // Cari kategori yang paling lama tidak di-pickup (lastPickedAt adalah yang paling tua)
     const nextCategory = await prisma.category.findFirst({
+      where: { disabledAt: null },
       orderBy: {
         lastPickedAt: { sort: 'asc', nulls: 'first' },
       },
