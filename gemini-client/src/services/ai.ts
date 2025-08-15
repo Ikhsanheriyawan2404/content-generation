@@ -116,21 +116,27 @@ export async function generateContentScript(
   const prompt = stripIndent`
     Kamu adalah content creator yang ahli membuat konten ${categoryData.contentGoal} untuk ${categoryData.targetAudience}.
 
-    Buatlah skrip konten singkat (maksimal 100 kata) yang relevan dengan kategori: ${categoryData.name}.
+    Buat skrip konten singkat (maksimal 100 kata) yang relevan dengan kategori: ${categoryData.name}.
     Deskripsi kategori: ${categoryData.description}
     Contoh use case: ${categoryData.exampleUseCase}
 
-    Gunakan gaya bahasa santai, storytelling singkat, dan call-to-action yang halus. Masukkan 1-2 insight atau tips praktis.
+    Format skrip:
+    1. Hook menarik (≤15 kata)
+    2. Penjelasan berisi 1-2 fakta atau konsep penting + contoh praktis
+    3. Call-to-action halus
+
+    Jika tujuan konten adalah Edukasi, pastikan audiens mendapatkan pengetahuan baru yang bermanfaat.
+
     Konten ini cocok untuk format short video / reels / TikTok.
 
-    Selain skrip, buatkan juga deskripsi visual yang sangat detail dan kreatif (berbentuk satu kalimat) yang bisa digunakan untuk generate gambar yang sesuai dengan skrip video ini.
+    Buat juga promptImage yang singkat (≤20 kata), fokus pada objek utama & suasana, tanpa detail berlebihan.
 
     Hasil output harus dalam format JSON dengan struktur ini:
     {
       "title": "Judul konten yang menarik",
       "caption": "Caption atau deskripsi singkat untuk postingan",
       "scriptText": "Skrip lengkap untuk video, berbentuk narasi atau poin-poin yang mudah dibaca",
-      "promptImage": "Deskripsi visual untuk AI image generator, misalnya: 'Pemandangan urban futuristik di malam hari, dengan lampu neon berkilauan dan kendaraan terbang. Cinematic, high-detail.'"
+      "promptImage": "PromptImage harus singkat (maksimal 20 kata), fokus pada objek dan suasana, tanpa detail berlebihan. Contoh: "Seorang developer muda fokus di laptop dengan latar kafe minimalis"."
     }
   `;
 
