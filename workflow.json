@@ -6,10 +6,10 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -340,
-        -320
+        -800,
+        64
       ],
-      "id": "0872d094-bb08-4c85-a2fe-597e9baebf06",
+      "id": "5f518270-ee1a-44ce-9861-12606a14574c",
       "name": "When clicking ‘Test workflow’"
     },
     {
@@ -20,10 +20,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -160,
-        -320
+        -608,
+        64
       ],
-      "id": "884a8d15-8471-4c70-afce-1b9dbba5d798",
+      "id": "c465cfe4-a74e-4e51-b8ed-4a6f6c31493d",
       "name": "Ambil kategori dari list (round robin)"
     },
     {
@@ -44,10 +44,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        20,
-        -320
+        -416,
+        64
       ],
-      "id": "0f38aaeb-8c4b-454c-8314-bb6015cd7fac",
+      "id": "7fe94468-05db-4c88-90c1-b519588ec3f6",
       "name": "Generate content by category terpilih"
     },
     {
@@ -59,11 +59,11 @@
           "parameters": [
             {
               "name": "text",
-              "value": "={{ $('Generate content by category terpilih').item.json.scriptText }}"
+              "value": "=test"
             },
             {
               "name": "contentId",
-              "value": "={{ $('Generate content by category terpilih').item.json.id }}"
+              "value": "={{ $json.data[0].contentId }}"
             }
           ]
         },
@@ -72,10 +72,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        980,
-        -220
+        1040,
+        176
       ],
-      "id": "63b76555-ce35-4794-9405-ccb890e6196a",
+      "id": "cb898a3e-2fd6-496c-840c-bad2b04e0004",
       "name": "Membuat TTS"
     },
     {
@@ -100,24 +100,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        660,
-        -240
+        640,
+        144
       ],
-      "id": "e595ed8d-debb-429d-9453-05b98bdebdb3",
+      "id": "c88ef93e-c4a2-41b5-8455-498a365a6bab",
       "name": "Image Generation"
-    },
-    {
-      "parameters": {
-        "jsCode": "const array = [1,2,3,4,5,6,7,8,9,10];\n\n// Ubah array jadi format item n8n\nreturn array.map(num => ({ json: { number: num } }));"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        200,
-        -320
-      ],
-      "id": "da531345-558e-4372-82e8-1317d013367f",
-      "name": "Code"
     },
     {
       "parameters": {
@@ -126,24 +113,24 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        440,
-        -380
+        0,
+        0
       ],
-      "id": "2654672b-ae2a-4a23-a5de-957234c21e85",
+      "id": "1e9bb21e-5eb1-4481-958e-5fc14ccc4ff2",
       "name": "Loop 10x untuk generate 10 gambar"
     },
     {
       "parameters": {
-        "url": "http://node-api:3000/media/6",
+        "url": "=http://node-api:3000/media/ {{ $json.contentId }}",
         "options": {}
       },
-      "id": "5b7ebfac-2b46-4d1b-8f5d-590c8cd8f52f",
+      "id": "6d322ea8-3e4e-4db2-9e2a-1f384d80c9cf",
       "name": "Get Media List",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        -360,
-        80
+        -800,
+        464
       ]
     },
     {
@@ -152,13 +139,13 @@
         "responseFormat": "file",
         "options": {}
       },
-      "id": "d45a16c2-fa8d-48e7-bb64-e741a705e195",
+      "id": "f6ad8ebb-44c4-4403-9ac9-f97b78779801",
       "name": "Get File Binary",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        380,
-        220
+        -64,
+        608
       ]
     },
     {
@@ -172,50 +159,50 @@
           ]
         }
       },
-      "id": "58f57c6d-22c3-41ae-b23f-093358f503fd",
+      "id": "deeaf043-36fc-4edf-b022-bb9291b285e6",
       "name": "IF Audio?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        480,
-        60
+        464,
+        448
       ]
     },
     {
       "parameters": {
         "functionCode": "// Rename binary data ke audio\nif ($input.item.binary && $input.item.binary.data) {\n  $input.item.binary = { \n    audio: $input.item.binary.data \n  };\n}\nreturn $input.item;"
       },
-      "id": "b8990f96-9423-4e31-8a19-140df7c0c5bf",
+      "id": "be6fb9f2-76ed-46f3-aa9d-c02b1da973a6",
       "name": "Set Audio Binary",
       "type": "n8n-nodes-base.functionItem",
       "typeVersion": 1,
       "position": [
-        700,
-        0
+        688,
+        384
       ]
     },
     {
       "parameters": {
         "functionCode": "// Rename binary data ke images\nif ($input.item.binary && $input.item.binary.data) {\n  $input.item.binary = { \n    images: $input.item.binary.data \n  };\n}\nreturn $input.item;"
       },
-      "id": "842ed4eb-2cee-405f-bca8-be33f3b52324",
+      "id": "f4e89802-d1ce-4efa-bdf8-248c8dc324df",
       "name": "Set Image Binary",
       "type": "n8n-nodes-base.functionItem",
       "typeVersion": 1,
       "position": [
-        700,
-        200
+        688,
+        592
       ]
     },
     {
       "parameters": {},
-      "id": "ad0c686d-62c6-4e73-9ffb-2873deaf2fcd",
+      "id": "b0346ae7-8e40-4a12-921e-17f7d7acf4f6",
       "name": "Merge All Files",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 1,
       "position": [
-        880,
-        100
+        864,
+        480
       ]
     },
     {
@@ -225,10 +212,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        180,
-        80
+        -256,
+        464
       ],
-      "id": "36b9d45b-b0d3-4f50-b9e0-999857d8dc55",
+      "id": "c698cca0-8991-401d-a6d3-37b6fa3c1c68",
       "name": "Loop Over Items"
     },
     {
@@ -239,10 +226,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -20,
-        80
+        -464,
+        464
       ],
-      "id": "d10c29ce-2f88-4d06-97fa-78eca298e590",
+      "id": "a7a22947-2278-4120-986b-b4f70b4dec48",
       "name": "Split Out"
     },
     {
@@ -319,10 +306,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1180,
-        100
+        1168,
+        480
       ],
-      "id": "1aabc28e-dddb-4374-9deb-884af2f696b0",
+      "id": "f3009f9b-7f2c-42e8-9289-661650e64d29",
       "name": "Create Video API"
     },
     {
@@ -332,24 +319,67 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -200,
-        80
+        -640,
+        464
       ],
-      "id": "0fd54a0b-9283-4876-a894-5d3900cd5701",
+      "id": "2e0b8342-f163-40ce-823d-964285e0648d",
       "name": "Mapping data"
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\n\n// Buat binary object dinamis tanpa cek fileType\nconst combinedBinary = {};\n\n// Item pertama = audio, sisanya = images\ncombinedBinary.audio = items[0]?.binary?.data;\n\n// Item sisanya = images (mulai dari index 1)\nfor (let i = 1; i < items.length; i++) {\n  if (items[i]?.binary?.data) {\n    combinedBinary[`image${i-1}`] = items[i].binary.data;\n  }\n}\n\nreturn [{\n  json: {\n    contentId: items[0]?.json?.contentId || 6,\n    totalItems: items.length,\n    binaryKeys: Object.keys(combinedBinary),\n    audioExists: !!combinedBinary.audio,\n    imageCount: Object.keys(combinedBinary).filter(key => key.startsWith('image')).length\n  },\n  binary: combinedBinary\n}];"
+        "jsCode": "const items = $input.all();\n\n// Buat binary object dinamis tanpa cek fileType\nconst combinedBinary = {};\n\n// Item pertama = audio, sisanya = images\ncombinedBinary.audio = items[0]?.binary?.data;\n\n// Item sisanya = images (mulai dari index 1)\nfor (let i = 1; i < items.length; i++) {\n  if (items[i]?.binary?.data) {\n    combinedBinary[`image${i-1}`] = items[i].binary.data;\n  }\n}\n\nreturn [{\n  json: {\n    contentId: $input.first().json.json.contentId,\n    totalItems: items.length,\n    binaryKeys: Object.keys(combinedBinary),\n    audioExists: !!combinedBinary.audio,\n    imageCount: Object.keys(combinedBinary).filter(key => key.startsWith('image')).length\n  },\n  binary: combinedBinary\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1020,
-        100
+        1008,
+        480
       ],
-      "id": "73bfbc4c-6a9d-4f05-8194-6d27e692826d",
+      "id": "1eee250c-efc2-48e4-a83d-45f6f7a6f105",
       "name": "Mapping asset binary"
+    },
+    {
+      "parameters": {
+        "jsCode": "const array = [1,2,3,4,5,6,7,8,9,10];\n\n// Ubah array jadi format item n8n\nreturn array.map(num => ({ json: { number: num } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        64
+      ],
+      "id": "64b071bc-752a-4c16-89ac-69e361924f07",
+      "name": "Jumlah iterasi generate image"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil semua item dari input\nconst allItems = $input.all();\n\n// Buat satu objek untuk menampung semua data\nconst combinedData = {\n  json: {\n    // Gabungkan semua data JSON menjadi sebuah array\n    data: allItems.map(item => item.json)\n  }\n};\n\n// Jika ada data biner, gabungkan juga\nif (allItems.some(item => item.binary)) {\n  combinedData.binary = {};\n  allItems.forEach((item, index) => {\n    if (item.binary) {\n      Object.assign(combinedData.binary, item.binary);\n    }\n  });\n}\n\n// Kembalikan hanya satu item\nreturn [combinedData];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        -16
+      ],
+      "id": "697bcf02-c997-47f4-803c-6fd901e80ac4",
+      "name": "Break menjadi satu kali exec"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        -96
+      ],
+      "id": "0fe5398a-251b-4e13-b34e-4cc15419b151",
+      "name": "Schedule Trigger"
     }
   ],
   "pinData": {},
@@ -380,7 +410,7 @@
       "main": [
         [
           {
-            "node": "Code",
+            "node": "Jumlah iterasi generate image",
             "type": "main",
             "index": 0
           }
@@ -388,17 +418,6 @@
       ]
     },
     "Image Generation": {
-      "main": [
-        [
-          {
-            "node": "Loop 10x untuk generate 10 gambar",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code": {
       "main": [
         [
           {
@@ -424,7 +443,7 @@
       "main": [
         [
           {
-            "node": "Membuat TTS",
+            "node": "Break menjadi satu kali exec",
             "type": "main",
             "index": 0
           }
@@ -561,16 +580,38 @@
           }
         ]
       ]
+    },
+    "Jumlah iterasi generate image": {
+      "main": [
+        [
+          {
+            "node": "Loop 10x untuk generate 10 gambar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Break menjadi satu kali exec": {
+      "main": [
+        [
+          {
+            "node": "Membuat TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "cffe8f9a-800b-4b9f-b79e-17083d3d37e5",
+  "versionId": "f7cde4f8-a5d6-4d14-9887-94751e75286b",
   "meta": {
-    "instanceId": "7b4602c3df5575f630d06a072bcb08694375982314c64f2f332a24fd0e436c42"
+    "instanceId": "7f45404456a23d32e1d19be264a373b11626a964a3359094fb399d172008e93d"
   },
-  "id": "h5lrHkSkobb5C4HY",
+  "id": "o2lghOivAoXmxGy5",
   "tags": []
 }
