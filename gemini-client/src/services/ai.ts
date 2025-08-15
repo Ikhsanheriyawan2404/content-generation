@@ -121,22 +121,22 @@ export async function generateContentScript(
     Contoh use case: ${categoryData.exampleUseCase}
 
     Format skrip:
-    1. Hook menarik (≤15 kata)
-    2. Penjelasan berisi 1-2 fakta atau konsep penting + contoh praktis
-    3. Call-to-action halus
+    1. Hook (≤15 kata) → pertanyaan provokatif, pernyataan mengejutkan, atau fakta unik yang memancing rasa penasaran.
+    2. Penjelasan: 1-2 fakta atau konsep penting + contoh praktis (ringkas & jelas).
+    3. Call-to-action halus (ajak penonton engage atau mencoba).
 
     Jika tujuan konten adalah Edukasi, pastikan audiens mendapatkan pengetahuan baru yang bermanfaat.
 
-    Konten ini cocok untuk format short video / reels / TikTok.
+    Konten ini cocok untuk format short video youtube / reels / TikTok.
 
-    Buat juga promptImage yang singkat (≤20 kata), fokus pada objek utama & suasana, tanpa detail berlebihan.
+    Buat juga promptImage singkat (≤20 kata), fokus pada objek utama, suasana, angle, dan mood. Hindari detail rumit atau teks.
 
     Hasil output harus dalam format JSON dengan struktur ini:
     {
       "title": "Judul konten yang menarik",
       "caption": "Caption atau deskripsi singkat untuk postingan",
       "scriptText": "Skrip lengkap untuk video, berbentuk narasi atau poin-poin yang mudah dibaca",
-      "promptImage": "PromptImage harus singkat (maksimal 20 kata), fokus pada objek dan suasana, tanpa detail berlebihan. Contoh: "Seorang developer muda fokus di laptop dengan latar kafe minimalis"."
+      "promptImage": "Objek utama + suasana + angle + mood"
     }
   `;
 
