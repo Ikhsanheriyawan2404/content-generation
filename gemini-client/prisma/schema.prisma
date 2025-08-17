@@ -33,8 +33,8 @@ model Category {
 model Content {
   id         Int       @id @default(autoincrement())
   categoryId Int       @map("category_id")
-  title      String    @db.VarChar(255)
-  caption    String?   @db.VarChar(255)
+  title      String    @db.Text
+  caption    String?   @db.Text
   scriptText String?   @db.Text @map("script_text")
   status     ContentStatus @default(pending)
   metadata   Json?     @map("metadata")
